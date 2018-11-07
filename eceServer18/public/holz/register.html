@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Holz - Register</title>
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" media="screen,projection">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+    <link href="/holz/stylesheets/holz.css" rel="stylesheet">
+    <script src="/holz/javascripts/register.js" defer></script>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  </head>
+
+  <body>
+    <!-- Dropdown Structure -->
+    <ul id="dropdown1" class="dropdown-content">
+      <li><a href="index.html">Sign in</a></li>
+    </ul>
+    <nav>
+      <div class="nav-wrapper blue-grey darken-2">
+      	<a href="#!" class="brand-logo left"><img id="logo" src="images/logo.png"><span id="name">Holz</span></a>
+      	<ul class="right ">
+            <!-- Dropdown Trigger -->
+	         <li><a class="dropdown-button" href="#!" data-activates="dropdown1"><i class="material-icons">more_vert</i></a></li>
+	      </ul>
+      </div>
+    </nav>
+
+    <div class="row">
+      <div class="col s12 m6">
+        <div class="card blue-grey ">
+          <div class="card-content white-text">
+            <span class="card-title">Account Registration</span>
+            <div class="input-field">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" >
+            </div>
+            <div class="input-field">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" name="fullName" >
+            </div>
+            <div class="input-field">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" >
+            </div>
+            <div class="input-field">
+              <label for="passwordConfirm">Confirm Password</label>
+              <input type="password" id="passwordConfirm" name="passwordConfirm" >
+            </div>
+            <div class="card-action">
+              <div><a id="signup" class="waves-effect waves-light btn">Register</a></div>
+              <div id="account">Have an account? <a href="index.html">Sign In</a></div>
+            </div>
+          </div>
+          <div class="card-panel blue-text" id="ServerResponse" style="display: none"></div>
+        </div>
+      </div>
+  </body>
+</html>

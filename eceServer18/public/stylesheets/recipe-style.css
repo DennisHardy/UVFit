@@ -1,0 +1,247 @@
+html {
+   font-family : Helvetica, sans-serif;
+   font-size : 10pt;
+   color : #888888;
+}
+
+header {
+   background-color: #FFBC32;
+   padding: 5px;
+   margin-bottom: 10px;
+   margin-top: 0px;
+}
+
+nav {
+   position: absolute;
+   right: 10px;
+   top: 15px;
+   color: #6e6e6e;
+}
+
+div.main-content {
+   width: 75%;
+   display: inline-block;
+}
+
+div.sidebar {
+   display: inline-block;
+   vertical-align: top;
+}
+
+header a {
+   color: white;
+   font-size: 12pt;
+   padding: 10px;
+   text-decoration: none;
+}
+
+header a:hover {
+   background-color: lightgray;
+}
+
+.sidebar a {
+   color: darkgray;
+   text-decoration: none;
+}
+
+.sidebar a:hover {
+   font-weight: bold;
+   text-decoration: underline;
+}
+
+div.logo {
+   font-weight: bolder;
+   font-size: 16pt;
+   color: #7e7e7e;
+   display: inline-block;
+   padding: 0px;
+   margin: 5px;
+}
+
+div.logo p {
+   padding: 0px;
+   margin: 0px;
+   vertical-align: middle;
+}
+
+
+h1, h2 {
+   color : #F9B678;
+   font-weight : lighter;
+   text-transform : uppercase;
+}
+
+h1 {
+   font-size : 30pt;
+}
+
+h2 {
+   font-size : 16pt;
+}
+
+h3 {
+   color : #F9B678;
+   text-transform : uppercase;
+}
+
+.author {  
+   color : #C0B1A2;
+   font-weight : lighter;
+   font-size : 12pt;
+}
+
+.verb {
+   text-transform : uppercase;
+   color : #F9B678;
+}
+
+.ingredients li {
+   font-weight : bold;
+}
+   
+footer {
+   text-align : center;
+   font-size : 9pt;
+   color : lightgray;
+   margin-top : 30px;
+   padding: 10px;
+}
+
+div.info {
+   border-bottom : 2px dotted #F9B678;
+   margin : 5px 5px 20px 5px;
+   padding-bottom : 10px;
+}
+
+.info h1 {
+   display: inline-block;
+   vertical-align : middle;
+   text-align : justify;
+   min-width : 300px;
+   max-width : 400px;
+   margin-right : 20px;
+   margin-bottom : 0px;
+}
+
+.info p {
+   display : inline-block;
+   vertical-align : middle;
+}
+
+div.summary {
+   margin : 5px;
+   text-align : center;
+}
+
+.summary img {
+   height: 200px;
+   margin-right : 5px;
+}
+
+.summary table {
+   display : inline-block;
+   border-spacing : 0;
+   text-align : right;
+}
+
+.summary tr {
+   height : 50px;
+}
+
+.summary td {
+   color : white;
+   font-size : 12pt;
+   padding : 10px 10px 10px 10px;
+   border-top: 1px solid white;
+   border-bottom: 1px solid white;
+}
+
+.summary th {
+   color : #6e6e6e;
+   text-align : left;
+   font-size : 12pt;
+   padding : 10px 10px 10px 10px;
+   border-top: 1px solid white;
+   border-bottom: 1px solid white;
+}
+
+.summary tr:nth-child(1) {
+   background-color : #F39C12;
+}
+
+.summary tr:nth-child(2) {
+   background-color : #F4D03F;
+}
+
+.summary tr:nth-child(3) {
+   background-color : #ABEBC6;
+}
+
+.summary tr:nth-child(4) {
+   background-color : #ABB2B9;
+}
+
+div.notes {
+   margin : 10px;
+}
+
+div.ingredients {
+   display : inline-block;
+   vertical-align : top;
+   max-width : 300px;
+   margin : 5px 20px 5px 5px;
+   border-bottom : 2px dotted #F9B678;
+}
+
+div.ingredients h2 {
+   padding-bottom : 10px;
+   border-bottom : 2px dotted #F9B678;
+}
+
+div.directions {
+   display : inline-block;
+   vertical-align : top;
+   margin : 5px;
+   max-width : 450px;
+   border-bottom : 2px dotted #F9B678;
+}
+
+div.directions h2 {
+   padding-bottom : 10px;
+   border-bottom : 2px dotted #F9B678;
+}
+
+li {
+   padding : 2px;
+}
+
+.ingredients ul {
+   padding-left : 10px;
+   list-style-type : none; /* Hide the marker for the ingredients list */
+}
+
+.directions ol {
+   padding-left : 10px;
+}
+
+   
+.directions li {
+   padding-top : 10px;
+   padding-bottom : 10px;
+}
+
+/* CSS to create colored numbers for ol */
+.directions ol {
+   list-style : none; 
+   counter-reset : li
+}
+
+.directions li::before {
+  content : counter(li) "."; 
+  color : #F9B678;
+  margin-right : 5px;  
+}
+  
+.directions li {
+   counter-increment : li
+}
