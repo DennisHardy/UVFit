@@ -51,6 +51,54 @@ catch (ex) {
    return res.status(401).json({success: false, message: "Invalid authentication token."});
 }
 });
+
+router.get('/id/:actId', function(req, res, next) {
+   var activityId = req.params.actId;
+   var responseJson = {
+      success : false,
+      message : ""
+   };
+   // Check for authentication token in x-auth header
+   if (!req.headers["x-auth"]) {
+      return res.status(401).json({success: false, message: "No authentication token"});
+   }
+
+   var authToken = req.headers["x-auth"];
+   try {
+      var decodedToken = jwt.decode(authToken, secret);
+      var response = {};
+      
+      User.findOne({email: decodedToken.email}, function(err, user) {
+         if(err) {
+            return res.status(200).json({success: false, message: "User does not exist."});
+         }
+         else {
+            // Find devices based on id
+            Activity.findOne({ userEmail : decodedToken.email, _id: activityId}, function(err, activity) {
+               if (activity && !err) {
+                  response.success = true;
+                  response.message = "Activity found."
+                  response.deviceId = activity.deviceId;
+                  response.startTime = activity.startTime;
+                  response.endTime = activity.endTime;
+                  response.activityType = activity.activityType;
+                  response.calories = activity.calories;
+                  response.TotalUV = activity.TotalUV;
+                  response.waypoints = activity.waypoints;
+                  return res.status(200).json(response);
+               }
+               else{
+                  return res.status(201).json({success: false, message: "Activity not found."});
+               }
+            });
+         }
+   });
+}
+catch (ex) {
+   return res.status(401).json({success: false, message: "Invalid authentication token."});
+}
+});
+
 router.post('/add', function(req, res, next){
    var responseJson = {
       success : false,
