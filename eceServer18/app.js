@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var devicesRouter = require('./routes/devices');
 var photonRouter = require('./routes/photon');
 var usersRouter = require('./routes/users');
+var activityRouter = require('./routes/activity');
 
 var app = express();
 
@@ -61,6 +62,7 @@ app.use('/', indexRouter);
 app.use('/devices', devicesRouter);
 app.use('/photon', photonRouter);
 app.use('/users', usersRouter);
+app.use('/activity', activityRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
