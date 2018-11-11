@@ -32,6 +32,15 @@ app.use(function (req, res, next) {
     next();
 });
 
+/*app.use(function(req, res, next){
+    var data = "";
+    req.on('data', function(chunk){ data += chunk})
+    req.on('end', function(){
+        console.log(data);
+        next();
+    });
+});*/
+
 app.use(logger('dev'));
 
 // The following allows use to send a JSON response using .json() instead of
@@ -44,6 +53,7 @@ app.use(express.json());
 // pairs will be accessible using req.query.key
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 
 // The following will parse JSON data passed in the body. Key/value
 // pairs will be accessible using req.body.key
@@ -66,18 +76,19 @@ app.use('/activity', activityRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+    next(createError(404));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // set locals, only providing error in development
+    console.log(req.body);
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;
