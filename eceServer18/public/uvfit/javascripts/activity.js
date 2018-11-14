@@ -21,7 +21,7 @@ function activityInfoSuccess(data, textSatus, jqXHR) {
    // Add the devices to the list before the list item for the add device button (link)
    for (var waypoint of data.waypoints) {
       $("#addDeviceForm").before("<li class='collection-item'>Lat: " +
-        waypoint.latitude + ", Lon: " + waypoint.longitude + "</li>")
+        waypoint.latitude + ", Lon: " + waypoint.longitude + ", speed: " + waypoint.speed+ "</li>")
    }
 }
 
