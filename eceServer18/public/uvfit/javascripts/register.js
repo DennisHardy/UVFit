@@ -3,10 +3,10 @@ function sendReqForSignup() {
   var fullName = document.getElementById("fullName").value;
   var password = document.getElementById("password").value;
   var passwordConfirm = document.getElementById("passwordConfirm").value;
+  var responseDiv = document.getElementById('ServerResponse');
 
   // FIXME: More thorough validation should be performed here. 
   if (password != passwordConfirm) {
-    var responseDiv = document.getElementById('ServerResponse');
     responseDiv.style.display = "block";
     responseDiv.innerHTML = "<p>Password does not match.</p>";
     return;
@@ -21,6 +21,7 @@ function sendReqForSignup() {
 }
 
 function signUpResponse() {
+   var responseDiv = document.getElementById('ServerResponse');
   // 200 is the response code for a successful GET request
   if (this.status === 201) {
     if (this.response.success) {
@@ -38,7 +39,7 @@ function signUpResponse() {
   else {
     // Use a span with dark red text for errors
     responseHTML = "<span class='red-text text-darken-2'>";
-    responseHTML += "Error: " + this.response.error;
+    responseHTML += "Error: " + this.response.message;
     responseHTML += "</span>"
   }
 

@@ -1,67 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>UVFit - Register</title>
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>UVFit - Register</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+	<link rel="stylesheet" href="/uvfit/stylesheets/uvfit.css" />
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+	<script src="/uvfit/javascripts/register.js" defer></script>
+</head>
 
-    <!--Import Google Icon Font-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!--Import materialize.css-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" media="screen,projection">
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<body>
+  <nav>
+    <div class="nav-wrapper deep-purple darken-2"><a href="#!" class="brand-logo"><img class="material-icons" src="images/logo.png" style="height:1.5em; vertical-align: text-top; margin: 0 .2em 0 .2em" >UVFit</a>
+    </div>
+  </nav>
 
-    <link href="/uvfit/stylesheets/uvfit.css" rel="stylesheet">
-    <script src="/uvfit/javascripts/register.js" defer></script>
-
-    <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  </head>
-
-  <body>
-    <!-- Dropdown Structure -->
-    <ul id="dropdown1" class="dropdown-content">
-      <li><a href="index.html">Sign in</a></li>
-    </ul>
-    <nav>
-      <div class="nav-wrapper deep-purple darken-2">
-      	<a href="#!" class="brand-logo left"><img id="logo" src="images/logo.png"><span id="name">UVFit</span></a>
-      	<ul class="right ">
-            <!-- Dropdown Trigger -->
-	         <li><a class="dropdown-button" href="#!" data-activates="dropdown1"><i class="material-icons">more_vert</i></a></li>
-	      </ul>
-      </div>
-    </nav>
-
-    <div class="row">
-      <div class="col s12 m6">
-        <div class="card deep-purple ">
-          <div class="card-content white-text">
-            <span class="card-title">Account Registration</span>
-            <div class="input-field">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" >
+  <div class="container">
+      <div class="row">
+            <div class="col s12 m8 l6 offset-m2 offset-l3">
+              <div class="card">
+                <div class="card-content deep-purple darken-2 white-text">
+                  <span class="card-title">Account Registration</span>
+                </div>
+                <div class="card-content">
+                     <div class="input-field">
+                           <input type="email" id="email" name="email" >
+                           <label for="email">Email</label>
+                         </div>
+                         <div class="input-field">
+                           <input type="text" id="fullName" name="fullName" >
+                           <label for="fullName">Full Name</label>
+                         </div>
+                         <div class="input-field">
+                           <input type="password" id="password" name="password" >
+                           <label for="password">Password</label>
+                         </div>
+                         <div class="input-field">
+                           <input type="password" id="passwordConfirm" name="passwordConfirm" >
+                           <label for="passwordConfirm">Confirm Password</label>
+                         </div>
+                    <div style="text-align: center;">
+                      <button id="signup" class="waves-effect waves-light btn deep-purple darken-2" style="width:100%; margin: 3em, 0;">Register</button>
+                      <div id="account">Have an account? <a class= "deep-purple-text text-darken-2" href="index.html">Sign In</a></div>
+                    </div>
+                </div>
+                <div class="card-panel blue-text" id="ServerResponse" style="display: none"></div>
+              </div>
             </div>
-            <div class="input-field">
-              <label for="fullName">Full Name</label>
-              <input type="text" id="fullName" name="fullName" >
-            </div>
-            <div class="input-field">
-              <label for="password">Password</label>
-              <input type="password" id="password" name="password" >
-            </div>
-            <div class="input-field">
-              <label for="passwordConfirm">Confirm Password</label>
-              <input type="password" id="passwordConfirm" name="passwordConfirm" >
-            </div>
-            <div class="card-action">
-              <div><a id="signup" class="waves-effect waves-light btn">Register</a></div>
-              <div id="account">Have an account? <a href="index.html">Sign In</a></div>
-            </div>
-          </div>
-          <div class="card-panel blue-text" id="ServerResponse" style="display: none"></div>
-        </div>
-      </div>
-  </body>
+  </div>
+  
+</body>
 </html>
