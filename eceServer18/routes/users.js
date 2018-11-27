@@ -127,11 +127,11 @@ router.put("/account/email", function(req, res){
             user.save(function(err, user){
                if (err) {
                   responseJson.status = "ERROR";
-                  responseJson.message = "Error updating user email in db." + err;
-                  return res.status(201).send(JSON.stringify(responseJson));
+                  responseJson.message = "Email already registered";
+                  return res.status(201).json(responseJson);
                }
-            });
-            // Find devices associated with user
+               else{
+                  // Find devices associated with user
 		      Device.find({ userEmail : decodedToken.email}, function(err, devices) {
 			      if (!err) {
 			         // Update registered devices associated with user
@@ -177,7 +177,10 @@ router.put("/account/email", function(req, res){
             responseJson.message = "email updated for user and all associated devices and activities";
             var token = jwt.encode({email: req.body.email}, secret);
             responseJson.newToken = token;
-            return res.status(201).send(JSON.stringify(responseJson))
+            return res.status(201).send(JSON.stringify(responseJson));
+               }
+            });
+            
          }
       });
    }
