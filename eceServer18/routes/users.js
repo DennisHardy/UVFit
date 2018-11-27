@@ -3,6 +3,7 @@ var router = express.Router();
 var fs = require('fs');
 var User = require("../models/users");
 var Device = require("../models/device");
+var Activity = require("../models/activity");
 var bcrypt = require("bcrypt-nodejs");
 var jwt = require("jwt-simple");
 
@@ -71,8 +72,8 @@ router.get("/account" , function(req, res) {
       var userStatus = {};
       
       User.findOne({email: decodedToken.email}, function(err, user) {
-         if(err) {
-            return res.status(200).json({success: false, message: "User does not exist."});
+         if(err || !user) {
+            return res.status(401).json({success: false, message: "User does not exist."});
          }
          else {
             userStatus['success'] = true;
@@ -96,6 +97,87 @@ router.get("/account" , function(req, res) {
 			      
                return res.status(200).json(userStatus);            
 		      });
+         }
+      });
+   }
+   catch (ex) {
+      return res.status(401).json({success: false, message: "Invalid authentication token."});
+   }
+   
+});
+
+router.put("/account/email", function(req, res){
+   // Check for authentication token in x-auth header
+   if (!req.headers["x-auth"]) {
+      return res.status(401).json({success: false, message: "No authentication token"});
+   }
+   
+   var authToken = req.headers["x-auth"];
+   
+   try {
+      var decodedToken = jwt.decode(authToken, secret);
+      var responseJson = {};
+      
+      User.findOne({email: decodedToken.email}, function(err, user) {
+         if(err || !user) {
+            return res.status(200).json({success: false, message: "User does not exist."});
+         }
+         else {
+            user.email = req.body.email;
+            user.save(function(err, user){
+               if (err) {
+                  responseJson.status = "ERROR";
+                  responseJson.message = "Error updating user email in db." + err;
+                  return res.status(201).send(JSON.stringify(responseJson));
+               }
+            });
+            // Find devices associated with user
+		      Device.find({ userEmail : decodedToken.email}, function(err, devices) {
+			      if (!err) {
+			         // Update registered devices associated with user
+			         for (device of devices) {
+                     device.userEmail = req.body.email;
+                     device.save(function(err, device){
+                        if (err) {
+                           responseJson.status = "ERROR";
+                           responseJson.message = "Error updating device data in db." + err;
+                           return res.status(201).send(JSON.stringify(responseJson));
+                        }
+                     });
+			         }
+               }
+               else{
+                  responseJson.status = "ERROR";
+                  responseJson.message = "Error finding device data in db." + err;
+                  return res.status(201).send(JSON.stringify(responseJson));
+               }              
+            });
+            // Find activities associated with user
+		      Activity.find({ userEmail : decodedToken.email}, function(err, activities) {
+			      if (!err) {
+			         // Update registered activities associated with user
+			         for (activity of activities) {
+                     activity.userEmail = req.body.email;
+                     activity.save(function(err, activity){
+                        if (err) {
+                           responseJson.status = "ERROR";
+                           responseJson.message = "Error updating activity data in db." + err;
+                           return res.status(201).send(JSON.stringify(responseJson));
+                        }
+                     });
+			         }
+               }
+               else{
+                  responseJson.status = "ERROR";
+                  responseJson.message = "Error finding activity data in db." + err;
+                  return res.status(201).send(JSON.stringify(responseJson));
+               }              
+            });
+            responseJson.status = "SUCCESS";
+            responseJson.message = "email updated for user and all associated devices and activities";
+            var token = jwt.encode({email: req.body.email}, secret);
+            responseJson.newToken = token;
+            return res.status(201).send(JSON.stringify(responseJson))
          }
       });
    }
