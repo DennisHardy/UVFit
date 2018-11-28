@@ -3,6 +3,7 @@ var router = express.Router();
 var fs = require('fs');
 var Device = require("../models/device");
 var User = require("../models/users");
+var Activity = require("../models/activity");
 var jwt = require("jwt-simple");
 
 /* Authenticate user */
@@ -22,6 +23,7 @@ function getNewApikey() {
 
 // GET request return one or "all" devices registered and last time of contact.
 router.get('/status/:devid', function(req, res, next) {
+   //TODO:Validate request
     var deviceId = req.params.devid;
     var responseJson = { devices: [] };
 
@@ -162,6 +164,53 @@ router.get('/all', function(req, res, next) {
       return res.status(401).json({success: false, message: "Invalid authentication token."});
    }
    
+});
+
+router.delete('/remove/:devid', function(req, res, next) {
+   var deviceId = req.params.devid;
+   var responseJson = {};
+
+   if (!req.headers["x-auth"]) {
+      return res.status(401).json({success: false, message: "No authentication token"});
+   }
+
+   var authToken = req.headers["x-auth"];
+
+   try {
+      var decodedToken = jwt.decode(authToken, secret);
+      
+      User.findOne({email: decodedToken.email}, function(err, user) {
+         if(err || !user) {
+            return res.status(400).json({success: false, message: "User does not exist."});
+         }
+         else {
+            //Current implementation doesn't use the device list of users but if it did this ould remove it
+            /*var index = user.userDevices.indexOf(deviceId);
+            if (index > -1) {
+               user.userDevices.splice(index, 1);
+            }
+            user.save();*/
+            // Find devices based on decoded token, 
+		      Device.findOne({ deviceId : deviceId, }, function(err, device) {
+			      if (!err && device.userEmail==decodedToken.email && device) {
+                  // TODO:TEST activity updates
+                  Activity.updateMany({deviceId : deviceId}, {deviceId : "DELETED"});
+			         device.remove();
+                  responseJson.success = true;
+                  responseJson.message = "Device "+deviceId+" has been successfully removed from the system.";
+                  return res.status(200).json(responseJson); 
+               }
+               else{
+                  return res.status(400).json({success: false, message: "Could not find device to delete"});
+               }
+		      });
+         }
+      });
+   }
+   catch (ex) {
+      return res.status(401).json({success: false, message: "Invalid authentication token."});
+   }
+
 });
 
 module.exports = router;

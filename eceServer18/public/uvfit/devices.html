@@ -43,28 +43,28 @@
   <div class="container">
     <div class="row">
     <div id="devices">
-         <div class="col s12 m6 l4" id="deviceTemplate">
-            <div class="card small sticky-action">
-            <div class="card-image">
-               <img class= "activator" src="images/navBackground.jpeg">
-            </div>
-            <div class="card-content activator">
-               <span class="card-title activator"><i class="material-icons left">developer_board</i><span class="deviceName"></span></span>
-            </div>
-            <div class="card-reveal">
-               <span class="card-title"><span class="deviceName"></span><i class="material-icons right">close</i></span>
-               <ul>
-               <li>ID: <span class="deviceId"></span></li>
-               <li>APIKEY: <span class="apiKey"></span></li>
-               <li>Last Contact: <span class="lastCont"></span></li>
-               </ul>
-            </div>
-            <div class="card-action">
-               <a href="#" class="deep-purple-text">Delete</a>
-            </div>
-            </div>
-         </div>
     </div>
+    <div class="col s12 m6 l4" id="deviceTemplate">
+         <div class="card small sticky-action">
+         <div class="card-image">
+            <img class= "activator" src="images/navBackground.jpeg">
+         </div>
+         <div class="card-content activator">
+            <span class="card-title activator"><i class="material-icons left">developer_board</i><span class="deviceName"></span></span>
+         </div>
+         <div class="card-reveal">
+            <span class="card-title"><span class="deviceName"></span><i class="material-icons right">close</i></span>
+            <ul>
+            <li>ID: <span class="deviceId"></span></li>
+            <li>APIKEY: <span class="apiKey"></span></li>
+            <li>Last Contact: <span class="lastCont"></span></li>
+            </ul>
+         </div>
+         <div class="card-action">
+            <a class="deep-purple-text deleteButton">Delete</a>
+         </div>
+         </div>
+      </div>
     <div class="col s12 m6 l4">
       <div class="card small">
         <div class="card-image">
@@ -90,6 +90,17 @@
   </div>
     
   </div>
-  
+
+  <div id="deleteModal" class="modal">
+      <div class="modal-content">
+        <h4>Delete Device</h4>
+        <p>Are you sure you want to delete device: <span id="modalDevId"></span>?</p>
+        <p>You will still be able to access activities created using the device.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-purple btn-flat">Cancel</a>
+        <a href="#!" class="waves-effect waves-purple btn-flat" id="deleteConfirm">DELETE</a>
+      </div>
+    </div>
 </body>
 </html>

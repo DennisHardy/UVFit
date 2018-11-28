@@ -10,6 +10,8 @@ function sendReqForDeviceInfo() {
 }
 
 function deviceInfoSuccess(data, textSatus, jqXHR) {
+   //clear device list
+   $("#devices").empty();
    // Add the devices to the list before the list item for the add device button (link)
    for (var device of data.devices) {
       //add devices
@@ -21,6 +23,7 @@ function deviceInfoSuccess(data, textSatus, jqXHR) {
        newDevice.find(".lastCont").html(device.lastContact);
        $("#devices").append(newDevice);
    }
+   $(".deleteButton").click(openModal);
 }
 
 function deviceInfoError(data, textSatus, jqXHR) {
@@ -55,6 +58,45 @@ function registerDevice() {
        }
    }); 
 }
+
+function sendReqToDeleteDevice() {
+   $.ajax({
+       url: '/devices/remove/'+$("#modalDevId").html(),
+       type: 'DELETE',
+       headers: { 'x-auth': window.localStorage.getItem("authToken") },
+       responseType: 'json',
+       success: deleteDeviceSuccess,
+       error: deleteDeviceError
+   });
+}
+
+function deleteDeviceSuccess(data, textSatus, jqXHR) {
+   
+   //Refresh device list
+   sendReqForDeviceInfo();
+}
+
+function deleteDeviceError(data, textSatus, jqXHR) {
+   // If authentication error, delete the authToken 
+   // redirect user to sign-in page (which is index.html)
+   if( data.status === 401 ) {
+       console.log("Invalid auth token");
+       window.localStorage.removeItem("authToken");
+       window.location.replace("index.html");
+   } 
+   else {
+       $("#error").html("Error: " + data.message);
+       $("#error").show();
+   } 
+}
+
+function openModal() {
+   var id = $(this).parents(".col").attr("id");
+   console.log(id);
+   $("#modalDevId").html(id)
+   $('#deleteModal').modal('open'); 
+}
+
 // Handle authentication on page load
 $(function() {
    // If there's no authToekn stored, redirect user to 
@@ -64,8 +106,11 @@ $(function() {
    }
    else {
       sendReqForDeviceInfo();
+      sendReqForDeviceInfo();
    }
 
    // Register event listeners
-   $("#registerDevice").click(registerDevice);   
+   $("#registerDevice").click(registerDevice);
+   $("#deleteConfirm").click(sendReqToDeleteDevice)
+   $('#deleteModal').modal();
 });
