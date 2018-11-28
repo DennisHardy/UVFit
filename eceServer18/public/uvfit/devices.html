@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>UVFit - Devices</title>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+	<link rel="stylesheet" href="/uvfit/stylesheets/uvfit.css" />
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+   <script src="/uvfit/javascripts/UVFit.js" defer></script>
+   <script src="/uvfit/javascripts/devices.js" defer></script>
+   <!-- Let browser know website is optimized for mobile -->
+	 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+  <ul id="accountDropdown" class="dropdown-content">
+    <li><a href="#!" class="deep-purple-text text-darken-2 signOutButton">Sign Out</a></li>
+    <li><a href="account.html" class="deep-purple-text text-darken-2">Account Info</a></li>
+  </ul>
+  <ul class="sidenav" id="mobile-nav">
+    <li class="deep-purple darken-2 sidenav-header">
+      <div class="sidenav-header">
+        <img class="sidenav-image" src="images/logo.png">
+        <a href="#!" class="sidenav-logo white-text">UVFit</a>
+      </div></li>
+    <li><a href="devices.html"><i class="material-icons left">developer_board</i>Devices</a></li>
+    <li><a href="activities.html"><i class="material-icons left">directions_bike</i>Activities</a></li>
+    <li><a href="account.html"><i class="material-icons left">account_circle</i>Account</a></li>
+    <li><a href="" class="signOutButton"><i class="material-icons left">exit_to_app</i>Sign Out</a></li>
+  </ul>
+  <nav>
+    <div class="nav-wrapper deep-purple darken-2"><a href="#!" class="brand-logo"><img class="material-icons" src="images/logo.png" style="height:1.5em; vertical-align: text-top; margin: 0 .2em 0 .2em" >UVFit</a> <a href="#" data-target="mobile-nav" class="sidenav-trigger"><em class="material-icons">menu</em></a>
+      <ul class="right hide-on-med-and-down">
+        <li><a href="devices.html"><i class="material-icons left">developer_board</i>Devices</a></li>
+        <li><a href="activities.html"><i class="material-icons left">directions_bike</i>Activities</a></li>
+        <li><a class="dropdown-trigger" href="#!" data-target="accountDropdown"><i class="material-icons left">account_circle</i>Account</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row">
+    <div id="devices">
+         <div class="col s12 m6 l4" id="deviceTemplate">
+            <div class="card small sticky-action">
+            <div class="card-image">
+               <img class= "activator" src="images/navBackground.jpeg">
+            </div>
+            <div class="card-content activator">
+               <span class="card-title activator"><i class="material-icons left">developer_board</i><span class="deviceName"></span></span>
+            </div>
+            <div class="card-reveal">
+               <span class="card-title"><span class="deviceName"></span><i class="material-icons right">close</i></span>
+               <ul>
+               <li>ID: <span class="deviceId"></span></li>
+               <li>APIKEY: <span class="apiKey"></span></li>
+               <li>Last Contact: <span class="lastCont"></span></li>
+               </ul>
+            </div>
+            <div class="card-action">
+               <a href="#" class="deep-purple-text">Delete</a>
+            </div>
+            </div>
+         </div>
+    </div>
+    <div class="col s12 m6 l4">
+      <div class="card small">
+        <div class="card-image">
+          <img class= "activator" src="images/navBackground.jpeg">
+        </div>
+        <div class="card-content">
+          <span class="card-title activator"><i class="material-icons left">add_circle</i>Add New Device</span>
+        </div>
+        <div class="card-reveal">
+          <span class="card-title"><i class="material-icons right">close</i>Add New Device</span>
+          <ul>
+          <li class="collection-item" id="addDeviceForm">
+            <div class="input-field">
+               <input id="deviceId" type="text">
+               <label for="deviceId">Device Id</label>
+             </div>
+            <button id="registerDevice" class="waves-effect waves-light btn deep-purple darken-2">Register</button>
+         </li>
+         </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+  </div>
+  
+</body>
+</html>

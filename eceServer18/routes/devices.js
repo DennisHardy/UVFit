@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var Device = require("../models/device");
+var User = require("../models/users");
 var jwt = require("jwt-simple");
 
 /* Authenticate user */
@@ -118,6 +119,49 @@ router.post('/register', function(req, res, next) {
             });
         }
     });
+});
+
+router.get('/all', function(req, res, next) {
+   // Check for authentication token in x-auth header
+   if (!req.headers["x-auth"]) {
+      return res.status(401).json({success: false, message: "No authentication token"});
+   }
+   
+   var authToken = req.headers["x-auth"];
+   
+   try {
+      var decodedToken = jwt.decode(authToken, secret);
+      var responseJson = {};
+      
+      User.findOne({email: decodedToken.email}, function(err, user) {
+         if(err || !user) {
+            return res.status(400).json({success: false, message: "User does not exist."});
+         }
+         else {
+            // Find devices based on decoded token
+		      Device.find({ userEmail : decodedToken.email}, function(err, devices) {
+			      if (!err) {
+			         // Construct device list
+			         var deviceList = []; 
+			         for (device of devices) {
+				         deviceList.push({ 
+				               deviceId: device.deviceId,
+                           apikey: device.apikey,
+                           lastContact: device.lastContact
+				         });
+                  }
+                  responseJson.success = true;
+			         responseJson['devices'] = deviceList;
+			      }
+               return res.status(200).json(responseJson);            
+		      });
+         }
+      });
+   }
+   catch (ex) {
+      return res.status(401).json({success: false, message: "Invalid authentication token."});
+   }
+   
 });
 
 module.exports = router;
