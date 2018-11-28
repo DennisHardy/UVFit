@@ -85,6 +85,55 @@ function updateNameError(jqXHR, textStatus, errorThrown) {
    } 
 }
 
+function sendReqForUpdatePassword() {
+   var body ={};
+   body.oldPassword =  $("#oldPassword").val();
+   body.newPassword =  $("#newPassword").val();
+   $("#error").hide();
+
+   if($("#newPassword").val() != $("#confirmPassword").val()){
+      $("#error").html("Error: Provided Passwords do not match");
+      $("#error").show();
+      return;
+   }
+   //TODO validate password
+   $.ajax({
+      url: '/users/account/password',
+      type: 'PUT',
+      headers: { 'x-auth': window.localStorage.getItem("authToken") },
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify(body),
+      success: updatePasswordSuccess,
+      error: updatePasswordError
+   });
+}
+
+function updatePasswordSuccess(data, textSatus, jqXHR) {
+   if(!data.success){
+      $("#error").html("Error: " + data.message);
+      $("#error").show();
+      M.toast({html: 'Password Update Failed'});
+   }
+   else{
+      sendReqForAccountInfo();
+      hidePasswordForm();
+      M.toast({html: 'Password Successfully Updated'});
+   }
+}
+
+function updatePasswordError(jqXHR, textStatus, errorThrown) {
+   // If authentication error, delete the authToken 
+   // redirect user to sign-in page (which is index.html)
+   if( jqXHR.status === 401 ) {
+      console.log("Invalid auth token");
+   } 
+   else {
+     $("#error").html("Error: " + jqXHR.responseJSON.message);
+     $("#error").show();
+   } 
+}
+
 function sendReqForAccountInfo() {
    $.ajax({
        url: '/users/account',
@@ -171,7 +220,7 @@ $(function() {
 
    $("#updateEmail").click(sendReqForUpdateEmail);
    $("#updateName").click(sendReqForUpdateName);
-   //$("#updatePassword").click(sendReqForUpdatePassword);
+   $("#updatePassword").click(sendReqForUpdatePassword);
    
    if (!window.localStorage.getItem("authToken")) {
       window.location.replace("index.html");
