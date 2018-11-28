@@ -1,7 +1,7 @@
 function sendReqForUpdateEmail() {
    var body ={};
    body.email =  $("#newEmail").val();
-   //check email
+   //TODO validate email
    $.ajax({
       url: '/users/account/email',
       type: 'PUT',
@@ -42,6 +42,49 @@ function updateEmailError(jqXHR, textStatus, errorThrown) {
    } 
 }
 
+function sendReqForUpdateName() {
+   var body ={};
+   body.name =  $("#newName").val();
+   //TODO validate name
+   $.ajax({
+      url: '/users/account/name',
+      type: 'PUT',
+      headers: { 'x-auth': window.localStorage.getItem("authToken") },
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify(body),
+      success: updateNameSuccess,
+      error: updateNameError
+   });
+}
+
+function updateNameSuccess(data, textSatus, jqXHR) {
+   if(!data.success){
+      $("#error").html("Error: " + data.message);
+      $("#error").show();
+      M.toast({html: 'Name Update Failed'});
+   }
+   else{
+      sendReqForAccountInfo();
+      hideNameForm();
+      M.toast({html: 'Name Successfully Updated'});
+   }
+}
+
+function updateNameError(jqXHR, textStatus, errorThrown) {
+   // If authentication error, delete the authToken 
+   // redirect user to sign-in page (which is index.html)
+   if( jqXHR.status === 401 ) {
+      console.log("Invalid auth token");
+      window.localStorage.removeItem("authToken");
+      window.location.replace("index.html");
+   } 
+   else {
+     $("#error").html("Error: " + jqXHR.responseJSON.message);
+     $("#error").show();
+   } 
+}
+
 function sendReqForAccountInfo() {
    $.ajax({
        url: '/users/account',
@@ -66,16 +109,16 @@ function accountInfoSuccess(data, textSatus, jqXHR) {
    }
 }
 
-function accountInfoError(jqXHR, textStatus, errorThrown) {
+function accountInfoError(data, textSatus, jqXHR) {
    // If authentication error, delete the authToken 
    // redirect user to sign-in page (which is index.html)
-   if( jqXHR.status === 401 ) {
+   if( data.status === 401 ) {
        console.log("Invalid auth token");
        window.localStorage.removeItem("authToken");
        window.location.replace("index.html");
    } 
    else {
-       $("#error").html("Error: " + status.message);
+       $("#error").html("Error: " + data.message);
        $("#error").show();
    } 
 }
@@ -85,15 +128,18 @@ function showEmailForm() {
    $("#newEmail").val("");           // Clear the input for the device ID
    $("#editEmailIcon").hide();    // Hide the add device link
    $("#editEmailForm").slideDown();  // Show the add device form
+   $("#newEmail").focus();
 }
 function showNameForm() {
-   $("#name").val("");           // Clear the input for the device ID
+   $("#newName").val('');           // Clear the input for the device ID
    $("#editNameIcon").hide();    // Hide the add device link
    $("#editNameForm").slideDown();  // Show the add device form
+   $("#newName").focus();
 }
 function showPasswordForm() {
    $("#changePassword").hide();
    $("#editPasswordForm").slideDown();
+   $("#oldPassword").focus();
 }
 
 // Hides forms
@@ -124,7 +170,7 @@ $(function() {
    $("#cancelPassword").click(hidePasswordForm);
 
    $("#updateEmail").click(sendReqForUpdateEmail);
-   //$("#updateName").click(sendReqForUpdateName);
+   $("#updateName").click(sendReqForUpdateName);
    //$("#updatePassword").click(sendReqForUpdatePassword);
    
    if (!window.localStorage.getItem("authToken")) {

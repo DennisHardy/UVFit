@@ -111,9 +111,10 @@ router.put("/account/email", function(req, res){
    if (!req.headers["x-auth"]) {
       return res.status(401).json({success: false, message: "No authentication token"});
    }
-   
+   if(!req.body.email){//TODO Better Email validation
+      return res.status(400).json({success: false, message: "Invalid Request"});
+   }
    var authToken = req.headers["x-auth"];
-   
    try {
       var decodedToken = jwt.decode(authToken, secret);
       var responseJson = {};
@@ -180,7 +181,46 @@ router.put("/account/email", function(req, res){
             return res.status(201).send(JSON.stringify(responseJson));
                }
             });
-            
+         }
+      });
+   }
+   catch (ex) {
+      return res.status(401).json({success: false, message: "Invalid authentication token."});
+   }
+   
+});
+
+router.put("/account/name", function(req, res){
+   // Check for authentication token in x-auth header
+   if (!req.headers["x-auth"]) {
+      return res.status(401).json({success: false, message: "No authentication token"});
+   }
+   if(!req.body.name){//TODO Better Name validation
+      return res.status(400).json({success: false, message: "Invalid Request"});
+   }
+   var authToken = req.headers["x-auth"];
+   try {
+      var decodedToken = jwt.decode(authToken, secret);
+      var responseJson = {};
+      
+      User.findOne({email: decodedToken.email}, function(err, user) {
+         if(err || !user) {
+            return res.status(200).json({success: false, message: "User does not exist."});
+         }
+         else {
+            user.fullName = req.body.name;
+            user.save(function(err, user){
+               if (err) {
+                  responseJson.success = false;
+                  responseJson.message = "Error: Communicating with database";
+                  return res.status(201).json(responseJson);
+               }
+               else{
+                  responseJson.success = true;
+                  responseJson.message = "Name Updated Successfully";
+                  return res.status(201).send(JSON.stringify(responseJson));
+               }
+            });
          }
       });
    }
