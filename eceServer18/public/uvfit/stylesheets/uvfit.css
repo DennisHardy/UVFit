@@ -42,3 +42,8 @@
  .big-button{
    width:100%; 
  }
+ .sidenav-image{
+    height: 2em;
+    vertical-align: text-bottom ;
+    margin: 0 .2em -.5em .2em
+ }
