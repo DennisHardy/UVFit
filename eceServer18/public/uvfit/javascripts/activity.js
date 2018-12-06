@@ -1,3 +1,19 @@
+var map;
+function initMap() {
+   map = new google.maps.Map(document.getElementById('map'), {
+     center: {lat: -34.397, lng: 150.644},
+     zoom: 1,
+     disableDefaultUI: true
+   });
+ }
+ function zoomToObject(obj){
+   var bounds = new google.maps.LatLngBounds();
+   var points = obj.getPath().getArray();
+   for (var n = 0; n < points.length ; n++){
+       bounds.extend(points[n]);
+   }
+   map.fitBounds(bounds);
+}
 function sendReqForActivityInfo() {
    activityId = getUrlVars()["id"];
    $.ajax({
@@ -11,18 +27,35 @@ function sendReqForActivityInfo() {
 }
 
 function activityInfoSuccess(data, textSatus, jqXHR) {
-   $("#startTime").html(data.startTime);
+   var startTime= new Date(data.startTime);
+   $("#startTime").html(startTime.toLocaleString('en-us'));
    $("#endTime").html(data.endTime);
+   var lengthSeconds=(Date.parse(data.endTime)-Date.parse(data.startTime))/1000;
+   var hours = Math.floor(lengthSeconds/3600);
+   var minutes = Math.floor((lengthSeconds%3600)/60);
+   var seconds = Math.floor((lengthSeconds%3600)%60);
+   $("#length").html(hours+":"+minutes+":"+seconds);
    $("#activityType").html(data.activityType);
    $("#calories").html(data.calories);
    $("#totalUV").html(data.TotalUV);
    $("#main").show();
-   
-   // Add the devices to the list before the list item for the add device button (link)
+   var path = [];
+   // Add the waypoints
    for (var waypoint of data.waypoints) {
-      $("#addDeviceForm").before("<li class='collection-item'>Lat: " +
-        waypoint.latitude + ", Lon: " + waypoint.longitude + ", speed: " + waypoint.speed+ "</li>")
+      $("#waypoints").append("<li class='collection-item'>Lat: " +
+        waypoint.latitude + ", Lon: " + waypoint.longitude + ", speed: " + waypoint.speed+ "</li>");
+        path.push({lat: waypoint.latitude, lng: waypoint.longitude});
    }
+   var myPath = new google.maps.Polyline({
+      path: path,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+  
+    myPath.setMap(map);
+    zoomToObject(myPath);
 }
 
 function activityInfoError(jqXHR, textStatus, errorThrown) {
@@ -67,6 +100,7 @@ $(function() {
    // Register event listeners
    $("#addDevice").click(showAddDeviceForm);
    $("#cancel").click(hideAddDeviceForm);   
+   
 });
 
 function getUrlVars()

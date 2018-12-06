@@ -5,4 +5,5 @@ $(document).ready(function(){
       window.localStorage.removeItem("authToken");
       window.location = "index.html";
     });
+    $('.tooltipped').tooltip();
 });
