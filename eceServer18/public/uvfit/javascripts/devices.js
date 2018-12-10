@@ -47,12 +47,12 @@ function registerDevice() {
        data: { deviceId: $("#deviceId").val() }, 
        responseType: 'json',
        success: function (data, textStatus, jqXHR) {
-          //TODO: close form and notify user
+         M.toast({html: 'Successfully Added Device'});
          sendReqForDeviceInfo();
        },
        error: function(jqXHR, textStatus, errorThrown) {
-          //TODO: test
            var response = JSON.parse(jqXHR.responseText);
+           M.toast({html: 'Failed Adding Device'});
            $("#error").html("Error: " + response.message);
            $("#error").show();
        }
@@ -71,7 +71,6 @@ function sendReqToDeleteDevice() {
 }
 
 function deleteDeviceSuccess(data, textSatus, jqXHR) {
-   
    //Refresh device list
    sendReqForDeviceInfo();
 }
@@ -113,4 +112,5 @@ $(function() {
    $("#registerDevice").click(registerDevice);
    $("#deleteConfirm").click(sendReqToDeleteDevice)
    $('#deleteModal').modal();
+   $("#error").hide();
 });

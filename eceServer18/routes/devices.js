@@ -23,7 +23,6 @@ function getNewApikey() {
 
 // GET request return one or "all" devices registered and last time of contact.
 router.get('/status/:devid', function(req, res, next) {
-   //TODO:Validate request
     var deviceId = req.params.devid;
     var responseJson = { devices: [] };
 

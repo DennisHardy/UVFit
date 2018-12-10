@@ -5,11 +5,20 @@ function sendReqForSignup() {
   var passwordConfirm = document.getElementById("passwordConfirm").value;
   var responseDiv = document.getElementById('ServerResponse');
 
-  // FIXME: More thorough validation should be performed here. 
   if (password != passwordConfirm) {
     responseDiv.style.display = "block";
     responseDiv.innerHTML = "<p>Password does not match.</p>";
     return;
+  }
+  else if (!checkPasswordStrength(password)){
+   responseDiv.style.display = "block";
+   responseDiv.innerHTML = "<p>Password must be at least 8 characters long and contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character(!@#$%^&).</p>";
+   return;
+  }
+  else if (!validateEmail(email)){
+   responseDiv.style.display = "block";
+   responseDiv.innerHTML = "<p>Please enter a valid email address.</p>";
+   return;
   }
   
   var xhr = new XMLHttpRequest();
@@ -51,3 +60,11 @@ function signUpResponse() {
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("signup").addEventListener("click", sendReqForSignup);
 });
+function checkPasswordStrength(password) {
+   var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+   return re.test(String(password));
+}
+function validateEmail(email) {
+   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+   return re.test(String(email).toLowerCase());
+}

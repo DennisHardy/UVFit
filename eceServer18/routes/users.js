@@ -38,7 +38,19 @@ router.post('/signin', function(req, res, next) {
 /* Register a new user */
 router.post('/register', function(req, res, next) {
 
-    // FIXME: Add input validation
+   if(!req.body.password||!req.body.email||req.body.fullName){
+      res.status(400).json( {success: false, message: "Invalid Request"});
+   } 
+   if (!checkPasswordStrength(req.body.password)){
+      responseDiv.style.display = "block";
+      responseDiv.innerHTML = "<p>Password must be at least 8 characters long and contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character(!@#$%^&).</p>";
+      return;
+   }
+   else if (!validateEmail(req.body.email)){
+      responseDiv.style.display = "block";
+      responseDiv.innerHTML = "<p>Please enter a valid email address.</p>";
+   return;
+   }
     bcrypt.hash(req.body.password, null, null, function(err, hash) {
         // Create an entry for the user
         var newUser = new User( {
@@ -111,8 +123,8 @@ router.put("/account/email", function(req, res){
    if (!req.headers["x-auth"]) {
       return res.status(401).json({success: false, message: "No authentication token"});
    }
-   if(!req.body.email){//TODO Better Email validation
-      return res.status(400).json({success: false, message: "Invalid Request"});
+   if(!req.body.email || !validateEmail(req.body.email)){
+      return res.status(400).json({success: false, message: "Invalid Email"});
    }
    var authToken = req.headers["x-auth"];
    try {
@@ -195,8 +207,8 @@ router.put("/account/name", function(req, res){
    if (!req.headers["x-auth"]) {
       return res.status(401).json({success: false, message: "No authentication token"});
    }
-   if(!req.body.name){//TODO Better Name validation
-      return res.status(400).json({success: false, message: "Invalid Request"});
+   if(!req.body.name){
+      return res.status(400).json({success: false, message: "No name provided."});
    }
    var authToken = req.headers["x-auth"];
    try {
@@ -234,8 +246,11 @@ router.put("/account/password", function(req, res){
    if (!req.headers["x-auth"]) {
       return res.status(401).json({success: false, message: "No authentication token"});
    }
-   if(!req.body.oldPassword||!req.body.newPassword){//TODO Better password validation
+   if(!req.body.oldPassword||!req.body.newPassword){
       return res.status(400).json({success: false, message: "Invalid Request"});
+   }
+   if(!checkPasswordStrength(req.body.newPassword)){
+      return res.status(400).json({success: false, message: "Password must be at least 8 characters long and contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character(!@#$%^&)."});
    }
    var authToken = req.headers["x-auth"];
    try {
@@ -283,4 +298,13 @@ router.put("/account/password", function(req, res){
       return res.status(401).json({success: false, message: "Invalid authentication token."});
    }
 });
+function validateEmail(email) {
+   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+   return re.test(String(email).toLowerCase());
+}
+function checkPasswordStrength(password) {
+   var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+   return re.test(String(password));
+}
+
 module.exports = router;

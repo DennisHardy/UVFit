@@ -27,6 +27,9 @@ html, body {
 #deviceTemplate, #main, #error #ServerResponse{
    display: none;
 }
+#error{
+   color: red;
+}
 
 /* label focus color */
 .input-field input[type=text]:focus + label, .input-field input[type=password]:focus + label, .input-field input[type=email]:focus + label {

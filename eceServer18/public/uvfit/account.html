@@ -48,8 +48,9 @@
             <li class="collection-item"><div>Email: <span id="email"></span><a href="#!" class="secondary-content"><i class="material-icons deep-purple-text text-darken-2" id="editEmailIcon">edit</i></a></div></li>
             <li class="collection-item" id="editEmailForm" style="display: none;">
 					<div class="input-field">
-                  <input id="newEmail" type="text">
+                  <input id="newEmail" type="email" class="validate">
                   <label for="newEmail">New Email</label>
+                  <span class="helper-text" data-error="Please enter a valid email" data-success=""></span>
                 </div>
 					<button id="updateEmail" class="waves-effect waves-light btn deep-purple darken-2">Update Email</button> 
 					<button id="cancelEmail" class="waves-effect waves-light btn deep-purple darken-2">Cancel</button> 

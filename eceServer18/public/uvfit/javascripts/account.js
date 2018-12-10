@@ -1,17 +1,22 @@
 function sendReqForUpdateEmail() {
    var body ={};
-   body.email =  $("#newEmail").val();
-   //TODO validate email
-   $.ajax({
-      url: '/users/account/email',
-      type: 'PUT',
-      headers: { 'x-auth': window.localStorage.getItem("authToken") },
-      dataType: 'json',
-      contentType: 'application/json',
-      data: JSON.stringify(body),
-      success: updateEmailSuccess,
-      error: updateEmailError
-   });
+   if(validateEmail($("#newEmail").val())){
+      body.email =  $("#newEmail").val();
+      $.ajax({
+         url: '/users/account/email',
+         type: 'PUT',
+         headers: { 'x-auth': window.localStorage.getItem("authToken") },
+         dataType: 'json',
+         contentType: 'application/json',
+         data: JSON.stringify(body),
+         success: updateEmailSuccess,
+         error: updateEmailError
+      });
+   }
+   else{
+      $("#error").html("Error: Invalid Email Address");
+      $("#error").show();
+   }
 }
 
 function updateEmailSuccess(data, textSatus, jqXHR) {
@@ -37,7 +42,7 @@ function updateEmailError(jqXHR, textStatus, errorThrown) {
       window.location.replace("index.html");
    } 
    else {
-     $("#error").html("Error: " + status.message);
+     $("#error").html("Error: " + jqXHR.responseJSON.message);
      $("#error").show();
    } 
 }
@@ -45,17 +50,22 @@ function updateEmailError(jqXHR, textStatus, errorThrown) {
 function sendReqForUpdateName() {
    var body ={};
    body.name =  $("#newName").val();
-   //TODO validate name
-   $.ajax({
-      url: '/users/account/name',
-      type: 'PUT',
-      headers: { 'x-auth': window.localStorage.getItem("authToken") },
-      dataType: 'json',
-      contentType: 'application/json',
-      data: JSON.stringify(body),
-      success: updateNameSuccess,
-      error: updateNameError
-   });
+   if(body.name){
+      $.ajax({
+         url: '/users/account/name',
+         type: 'PUT',
+         headers: { 'x-auth': window.localStorage.getItem("authToken") },
+         dataType: 'json',
+         contentType: 'application/json',
+         data: JSON.stringify(body),
+         success: updateNameSuccess,
+         error: updateNameError
+      });
+   }
+   else{
+      $("#error").html("Error: Please enter a name");
+      $("#error").show();
+   }
 }
 
 function updateNameSuccess(data, textSatus, jqXHR) {
@@ -96,17 +106,23 @@ function sendReqForUpdatePassword() {
       $("#error").show();
       return;
    }
-   //TODO validate password
-   $.ajax({
-      url: '/users/account/password',
-      type: 'PUT',
-      headers: { 'x-auth': window.localStorage.getItem("authToken") },
-      dataType: 'json',
-      contentType: 'application/json',
-      data: JSON.stringify(body),
-      success: updatePasswordSuccess,
-      error: updatePasswordError
-   });
+   else if(!checkPasswordStrength($("#newPassword").val())){
+      $("#error").html("Error: Password must be at least 8 characters long and contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character(!@#$%^&).");
+      $("#error").show();
+      return;
+   }
+   else{
+      $.ajax({
+         url: '/users/account/password',
+         type: 'PUT',
+         headers: { 'x-auth': window.localStorage.getItem("authToken") },
+         dataType: 'json',
+         contentType: 'application/json',
+         data: JSON.stringify(body),
+         success: updatePasswordSuccess,
+         error: updatePasswordError
+      });
+   }
 }
 
 function updatePasswordSuccess(data, textSatus, jqXHR) {
@@ -229,3 +245,11 @@ $(function() {
       sendReqForAccountInfo();
   }
 });
+function validateEmail(email) {
+   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+   return re.test(String(email).toLowerCase());
+}
+function checkPasswordStrength(password) {
+   var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+   return re.test(String(password));
+}
