@@ -26,9 +26,18 @@ function activitySuccess(data, textSatus, jqXHR) {
 
     // Add the devices to the list before the list item for the add device button (link)
     for (var activity of data.activities) {
-        $("#addActivityForm").before("<li class='collection-item'>ID: " 
-            + "<a href='activity.html?id=" + activity.activityId + "'>" 
-            + activity.activityId + "</a>" + ", Start: " + activity.startTime + "</li>")
+
+        var startTime= new Date(data.startTime);
+        $("#startTime").html(startTime.toLocaleString('en-us'));
+        $("#endTime").html(data.endTime);
+        var lengthSeconds=(Date.parse(data.endTime)-Date.parse(data.startTime))/1000;
+        var hours = Math.floor(lengthSeconds/3600);
+        var minutes = Math.floor((lengthSeconds%3600)/60);
+        var seconds = Math.floor((lengthSeconds%3600)%60);
+        $("#length").html(hours+":"+minutes+":"+seconds);
+
+        $("#activityType").html(data.activityType);
+        $("date").html(startTime);
     }
 }
 
