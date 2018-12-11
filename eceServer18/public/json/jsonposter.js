@@ -10,6 +10,18 @@ function postJson() {
     xhr.send(json);
 }
 
+function putJson() {
+    var url = document.getElementById("url").value;
+    var json = document.getElementById("jsonData").value;
+
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", processResponse);
+    xhr.responseType = "json";
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(json);
+}
+
 // Response listener for the Ajax call for posting a participation 
 function processResponse() {
     var responseDiv = document.getElementById('ServerResponse');
@@ -40,3 +52,4 @@ function processResponse() {
 }
 
 document.getElementById("postJson").addEventListener("click", postJson);
+document.getElementById("putJson").addEventListener("click", putJson);

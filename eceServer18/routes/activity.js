@@ -212,6 +212,8 @@ router.put("/update", function(req, res, next){
         message : "",
         activityId: "",
     };
+    console.log("PUT:");
+    console.log(req.body);
 
     if(req.body.latitude != undefined && req.body.longitude != undefined
         && req.body.speed != undefined && req.body.uvExposure != undefined){
@@ -236,7 +238,13 @@ router.put("/update", function(req, res, next){
         }
 
         Activity.findById(req.body.activityId, function(err, activity){
-            if(activity === null){
+            if(err){
+                console.log("Error finding activity to update!");
+                console.log(err);
+                responseJson.message = "Interal error.";
+                return res.status(501).json(responseJson);
+            }
+            if(!activity){
                 responseJson.message = "Activity ID " + req.body.activityId + " does not exist.";
                 return res.status(201).json(responseJson);
             }
@@ -252,7 +260,7 @@ router.put("/update", function(req, res, next){
 
                 responseJson.success = true;
                 responseJson.message = "Activity successfully updated!";
-                responseJson.activityId = newAct._id.toString();
+                responseJson.activityId = activity._id.toString();
                 return res.status(201).send(JSON.stringify(responseJson));
             });
         });

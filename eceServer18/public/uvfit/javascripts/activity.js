@@ -1,4 +1,11 @@
 var map;
+
+Number.prototype.pad = function(size) {
+        var s = String(this);
+        while (s.length < (size || 2)) {s = "0" + s;}
+        return s;
+}
+
 function initMap() {
    map = new google.maps.Map(document.getElementById('map'), {
      center: {lat: -34.397, lng: 150.644},
@@ -28,13 +35,14 @@ function sendReqForActivityInfo() {
 
 function activityInfoSuccess(data, textSatus, jqXHR) {
    var startTime= new Date(data.startTime);
+   var endTime = new Date(data.endTime);
    $("#startTime").html(startTime.toLocaleString('en-us'));
-   $("#endTime").html(data.endTime);
+   $("#endTime").html(endTime.toLocaleString('en-us'));
    var lengthSeconds=(Date.parse(data.endTime)-Date.parse(data.startTime))/1000;
    var hours = Math.floor(lengthSeconds/3600);
    var minutes = Math.floor((lengthSeconds%3600)/60);
    var seconds = Math.floor((lengthSeconds%3600)%60);
-   $("#length").html(hours+":"+minutes+":"+seconds);
+   $("#length").html(hours.pad(2)+":"+minutes.pad(2)+":"+seconds.pad(2));
    $("#activityType").html(data.activityType);
    $("#calories").html(data.calories);
    $("#totalUV").html(data.TotalUV);
@@ -42,6 +50,8 @@ function activityInfoSuccess(data, textSatus, jqXHR) {
    var path = [];
    // Add the waypoints
    for (var waypoint of data.waypoints) {
+       waypoint.latitude /= 100;
+       waypoint.longitude /= 100;
       $("#waypoints").append("<li class='collection-item'>Lat: " +
         waypoint.latitude + ", Lon: " + waypoint.longitude + ", speed: " + waypoint.speed+ "</li>");
         path.push({lat: waypoint.latitude, lng: waypoint.longitude});
