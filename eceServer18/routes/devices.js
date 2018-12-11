@@ -58,7 +58,7 @@ router.post('/register', function(req, res, next) {
     var deviceExists = false;
     
     // Ensure the request includes the deviceId parameter
-    if( !req.body.hasOwnProperty("deviceId")) {
+    if( !req.body.hasOwnProperty("deviceId") || req.body.deviceId === "") {
         responseJson.message = "Missing deviceId.";
         return res.status(400).json(responseJson);
     }

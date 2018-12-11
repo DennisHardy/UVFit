@@ -1,3 +1,9 @@
+Number.prototype.pad = function(size) {
+        var s = String(this);
+        while (s.length < (size || 2)) {s = "0" + s;}
+        return s;
+}
+
 function sendReqForAccountInfo() {
     $.ajax({
         url: '/users/account',
@@ -26,18 +32,47 @@ function activitySuccess(data, textSatus, jqXHR) {
 
     // Add the devices to the list before the list item for the add device button (link)
     for (var activity of data.activities) {
-
-        var startTime= new Date(data.startTime);
-        $("#startTime").html(startTime.toLocaleString('en-us'));
-        $("#endTime").html(data.endTime);
-        var lengthSeconds=(Date.parse(data.endTime)-Date.parse(data.startTime))/1000;
+        var startTime= new Date(activity.startTime);
+        //var endTime= new Date(activity.endTime);
+        //$("#startTime").html(startTime.toLocaleString('en-us'));
+        //$("#endTime").html(endTime.toLocaleString('en-us'));
+        var lengthSeconds=activity.duration/1000;
         var hours = Math.floor(lengthSeconds/3600);
         var minutes = Math.floor((lengthSeconds%3600)/60);
         var seconds = Math.floor((lengthSeconds%3600)%60);
-        $("#length").html(hours+":"+minutes+":"+seconds);
+        //$("#length").html(hours.pad(2)+":"+minutes.pad(2)+":"+seconds.pad(2));
+        //$("#activityType").html(activity.activityType);
+        //$("date").html(startTime.toLocaleString('en-us'));
+        var calories = 0;
+        if(activity.activityType == "walking"){
+            calories = 0.04 * lengthSeconds; //0.04 calories per second found online
+        } else if(activity.activityType == "running"){
+            calories = 0.12 * lengthSeconds; //Found online
+        } else if(activity.activityType == "biking"){
+            calories = 0.135 * lengthSeconds; //Found online
+        }
 
-        $("#activityType").html(data.activityType);
-        $("date").html(startTime);
+        var numFmt = new Intl.NumberFormat("en-us", {"maximumFractionDigits":1});
+
+		var card = "<div class=\"col s12 m4\">" 
+            + "<div class=\"card deep-purple darken-2\">" 
+            + "<div class=\"card-image\">"
+            + "<img src=\"images/" + activity.activityType + ".jpg\" class=\"responsive-img\">"
+            + "<span class=\"card-title\">" + activity.activityType + "</span>"
+            + "</div>"
+            + "<div class=\"card-content white-text\">" 
+            + "<div>Calories: " + numFmt.format(calories) + "</div>"
+            + "<div>Duration: " 
+            + hours.pad(2) + ":" + minutes.pad(2) + ":" + seconds.pad(2) 
+            + "</div>"
+            + "<div>Date: " + startTime.toLocaleString('en-us') + "</div>"
+            + "</div>"
+            + "<div class=\"card-action\">" 
+            + "<a href=\"activity.html?id=" + activity.activityId + "\">Details...</a>" 
+            + "</div>"
+            + "</div>" 
+            + "</div>";
+        $("#activity-cards").append(card);
     }
 }
 
@@ -58,13 +93,13 @@ function activityError(jqXHR, textStatus, errorThrown) {
 function accountInfoSuccess(data, textSatus, jqXHR) {
     $("#email").html(data.email);
     $("#fullName").html(data.fullName);
-    $("#lastAccess").html(data.lastAccess);
+    $("#lastAccess").html((new Date(data.lastAccess)).toLocaleString('en-us'));
     $("#main").show();
 
     // Add the devices to the list before the list item for the add device button (link)
     for (var device of data.devices) {
         $("#addDeviceForm").before("<li class='collection-item'>ID: " +
-            device.deviceId.toFixed(6) + "</li>")
+            device.deviceId + "</li>")
     }
 }
 
@@ -107,14 +142,22 @@ function registerDevice() {
 // Show add device form and hide the add device button (really a link)
 function showAddDeviceForm() {
     $("#deviceId").val("");           // Clear the input for the device ID
-    $("#addDeviceControl").hide();    // Hide the add device link
-    $("#addDeviceForm").slideDown();  // Show the add device form
+    $("#addDeviceControl").slideUp({
+        "duration": 125,
+        "complete": function(){
+        $("#addDeviceForm").slideDown();  // Show the add device form
+    }});    // Hide the add device link
+    //$("#addDeviceForm").slideDown();  // Show the add device form
 }
 
 // Hides the add device form and shows the add device button (link)
 function hideAddDeviceForm() {
-    $("#addDeviceControl").show();  // Hide the add device link
-    $("#addDeviceForm").slideUp();  // Show the add device form
+    $("#addDeviceForm").slideUp({
+        "duration": 125,
+        "complete":function(){
+        $("#addDeviceControl").slideDown();
+    }});  // Hide the add device form
+    //$("#addDeviceControl").show();  // Show the add device link
     $("#error").hide();
 }
 
@@ -129,7 +172,8 @@ $(function() {
         sendReqForAccountInfo();
         sendReqForActivityInfo();
     }
-
+    $("#addDeviceForm").hide();
+    $(".collapsible").collapsible();
     // Register event listeners
     $("#addDevice").click(showAddDeviceForm);
     $("#registerDevice").click(registerDevice);   
