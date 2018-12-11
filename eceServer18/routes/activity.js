@@ -83,7 +83,7 @@ router.get('/id/:actId', function(req, res, next) {
                         response.endTime = activity.endTime;
                         response.activityType = activity.activityType;
                         response.calories = activity.calories;
-                        response.TotalUV = activity.TotalUV;
+                        response.TotalUV = activity.totalUV;
                         response.waypoints = activity.waypoints;
                         return res.status(200).json(response);
                     }
@@ -191,6 +191,7 @@ router.post('/add', function(req, res, next){
             waypoints:    req.body.waypoints,
         });
         activity.calories = getCalories(activity);
+        activity.totalUV = getTotalUV(activity);
         responseJson.message = "New activity recorded.";
 
         activity.save(function(err, newAct){
@@ -252,6 +253,7 @@ router.put("/update", function(req, res, next){
             if(newWaypoint){
                 activity.waypoints.push(newWaypoint);
                 activity.calories = getCalories(activity);
+                activity.totalUV = getTotalUV(activity);
             }
             activity.save(function(err, activity){
                 if (err) {
@@ -329,5 +331,12 @@ function getCalories(activity){
    }
    return Math.ceil(calories);
 }
-
+function getTotalUV(activity){
+   var total = 0;
+   for(var waypoint of activity.waypoints){
+      total +=waypoint.uvExposure;
+   }
+   totalUV=Math.ceil((total/100)/3600);
+   return totalUV;
+}
 module.exports = router;
