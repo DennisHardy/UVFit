@@ -64,7 +64,7 @@ function accountInfoSuccess(data, textSatus, jqXHR) {
     // Add the devices to the list before the list item for the add device button (link)
     for (var device of data.devices) {
         $("#addDeviceForm").before("<li class='collection-item'>ID: " +
-            device.deviceId + ", APIKEY: " + device.apikey + "</li>")
+            device.deviceId.toFixed(6) + "</li>")
     }
 }
 
