@@ -55,7 +55,7 @@ function activitySuccess(data, textSatus, jqXHR) {
         var numFmt = new Intl.NumberFormat("en-us", {"maximumFractionDigits":1});
 
 		var card = "<div class=\"col s12 m4\">" 
-            + "<div class=\"card deep-purple darken-2\">" 
+            + "<div class=\"card medium deep-purple darken-2\">" 
             + "<div class=\"card-image\">"
             + "<img src=\"images/" + activity.activityType + ".jpg\" class=\"responsive-img\">"
             + "<span class=\"card-title\">" + activity.activityType + "</span>"
