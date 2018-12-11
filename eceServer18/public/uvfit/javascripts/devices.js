@@ -20,7 +20,7 @@ function deviceInfoSuccess(data, textSatus, jqXHR) {
        newDevice.find(".deviceName").html(device.deviceId);
        newDevice.find(".deviceId").html(device.deviceId);
        newDevice.find(".apiKey").html(device.apikey);
-       newDevice.find(".lastCont").html(device.lastContact);
+       newDevice.find(".lastCont").html((new Date(device.lastContact)).toLocaleString('en-us'));
        $("#devices").append(newDevice);
    }
    $(".deleteButton").click(openModal);
