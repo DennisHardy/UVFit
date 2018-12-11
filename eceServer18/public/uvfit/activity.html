@@ -83,7 +83,20 @@
 
                     <li class="collection-item">Start: <span id="startTime"></span></li>
                     <li class="collection-item">End: <span id="endTime"></span></li>
-                    <li class="collection-item">Type: <span id="activityType"></span></li>
+                    <li class="collection-item" id="type">Type: <span id="activityType"></span><i class="material-icons right" id="editType">edit</i></li>
+                    <li class="collection-item" id="typeForm" hidden>
+                    <div class="input-field" id="typeSelect">
+                     <select id="typeSelector">
+                       <option value="" disabled selected>Choose your option</option>
+                       <option value="walking" class=" deep-purple-text text-darken-2">Walking</option>
+                       <option value="running" class=" deep-purple-text text-darken-2">Running</option>
+                       <option value="biking" class=" deep-purple-text text-darken-2">Biking</option>
+                     </select>
+                     <label>Activity Type</label>
+                     <a class="waves-effect waves-light btn deep-purple darken-2" id="typeUpdate">Update</a>
+                    </div>
+                    </li>
+                   </ul>
                     </ul>
                     <ul class="collection with-header" id="waypoints">
                         <li class="collection-header">

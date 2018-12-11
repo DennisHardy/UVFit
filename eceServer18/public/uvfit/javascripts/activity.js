@@ -50,6 +50,7 @@ function activityInfoSuccess(data, textSatus, jqXHR) {
    var path = [];
    // Add the waypoints
    for (var waypoint of data.waypoints) {
+      $("#waypoints").empty();
       $("#waypoints").append("<li class='collection-item'>Latitude: " +
         waypoint.latitude + "<br>Longitude: " + waypoint.longitude + "<br>Speed: " + waypoint.speed + " mph</li>");
         path.push({lat: waypoint.latitude, lng: waypoint.longitude});
@@ -80,13 +81,53 @@ function activityInfoError(jqXHR, textStatus, errorThrown) {
    } 
 }
 
+function updateActivityType() {
+   if($('#typeSelector').val()){
+      var body = {activityType:"", activityId:0};
+      body.activityType = $('#typeSelector').val();
+      body.activityId = getUrlVars()["id"];
+      $.ajax({
+         url: '/activity/type/',
+         type: 'PUT',
+         headers: { 'x-auth': window.localStorage.getItem("authToken") },
+         responseType: 'json',
+         data: JSON.stringify(body),
+         dataType: 'json',
+         contentType: 'application/json',
+         success: activityTypeSuccess,
+         error: activityTypeError
+      });
+   }
+   else {
+      M.toast({html:"Please Select an Activity Type"});
+    }
+}
+
+function activityTypeSuccess(jqXHR, textStatus, errorThrown){
+   M.toast({html:"Activity Type Change Successful"});
+   sendReqForActivityInfo();
+   hideEditForm();
+   
+}
+function activityTypeError(jqXHR, textStatus, errorThrown){
+   M.toast({html:"Activity Type Change Error"});
+   $("#error").html("Error: " + jqXHR.body.message);
+   $("#error").show();
+}
 // Show add device form and hide the add device button (really a link)
 function showAddDeviceForm() {
    $("#deviceId").val("");           // Clear the input for the device ID
    $("#addDeviceControl").hide();    // Hide the add device link
    $("#addDeviceForm").slideDown();  // Show the add device form
 }
-
+function showEditForm() {
+   $("#type").hide();    // Hide the type label
+   $("#typeForm").show();  // Show the change type form
+}
+function hideEditForm() {
+   $("#type").show();    // Hide the type label
+   $("#typeForm").hide();  // Show the change type form
+}
 // Hides the add device form and shows the add device button (link)
 function hideAddDeviceForm() {
    $("#addDeviceControl").show();  // Hide the add device link
@@ -104,10 +145,12 @@ $(function() {
    else {
       sendReqForActivityInfo();
    }
-   
+   $('select').formSelect();
    // Register event listeners
    $("#addDevice").click(showAddDeviceForm);
-   $("#cancel").click(hideAddDeviceForm);   
+   $("#cancel").click(hideAddDeviceForm);  
+   $('#editType').click(showEditForm);
+   $('#typeUpdate').click(updateActivityType);
 });
 
 function getUrlVars()
