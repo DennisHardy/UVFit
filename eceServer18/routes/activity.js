@@ -190,6 +190,7 @@ router.post('/add', function(req, res, next){
             TotalUV:      req.body.totalUV,
             waypoints:    req.body.waypoints,
         });
+        activity.calories = getCalories(activity);
         responseJson.message = "New activity recorded.";
 
         activity.save(function(err, newAct){
@@ -250,6 +251,7 @@ router.put("/update", function(req, res, next){
             }
             if(newWaypoint){
                 activity.waypoints.push(newWaypoint);
+                activity.calories = getCalories(activity);
             }
             activity.save(function(err, activity){
                 if (err) {
@@ -293,6 +295,7 @@ router.put("/type", function(req, res, next){
          }
          if(req.body.activityType=="walking"|| req.body.activityType=="running"|| req.body.activityType=="biking"){
              activity.activityType=req.body.activityType;
+             activity.calories = getCalories(activity);
          }
          else{
             responseJson.message = "Invalid Activity Type: "+req.body.activityType;
@@ -314,5 +317,17 @@ router.put("/type", function(req, res, next){
      });
    }
 });
+function getCalories(activity){
+   var lengthSeconds=(activity.endTime - activity.startTime)/1000;
+   var calories = 0;
+   if(activity.activityType == "walking"){
+         calories = 0.04 * lengthSeconds; //0.04 calories per second found online
+   } else if(activity.activityType == "running"){
+         calories = 0.12 * lengthSeconds; //Found online
+   } else if(activity.activityType == "biking"){
+         calories = 0.135 * lengthSeconds; //Found online
+   }
+   return Math.ceil(calories);
+}
 
 module.exports = router;
