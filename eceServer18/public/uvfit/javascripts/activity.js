@@ -50,10 +50,8 @@ function activityInfoSuccess(data, textSatus, jqXHR) {
    var path = [];
    // Add the waypoints
    for (var waypoint of data.waypoints) {
-       waypoint.latitude /= 100;
-       waypoint.longitude /= 100;
-      $("#waypoints").append("<li class='collection-item'>Lat: " +
-        waypoint.latitude + ", Lon: " + waypoint.longitude + ", speed: " + waypoint.speed+ "</li>");
+      $("#waypoints").append("<li class='collection-item'>Latitude: " +
+        waypoint.latitude + "<br>Longitude: " + waypoint.longitude + "<br>Speed: " + waypoint.speed + " mph</li>");
         path.push({lat: waypoint.latitude, lng: waypoint.longitude});
    }
    var myPath = new google.maps.Polyline({
@@ -110,7 +108,6 @@ $(function() {
    // Register event listeners
    $("#addDevice").click(showAddDeviceForm);
    $("#cancel").click(hideAddDeviceForm);   
-   
 });
 
 function getUrlVars()
