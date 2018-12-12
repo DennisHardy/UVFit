@@ -214,8 +214,6 @@ router.put("/update", function(req, res, next){
         message : "",
         activityId: "",
     };
-    console.log("PUT:");
-    console.log(req.body);
 
     if(req.body.latitude != undefined && req.body.longitude != undefined
         && req.body.speed != undefined && req.body.uvExposure != undefined){
