@@ -27,12 +27,20 @@ function sendReqForActivityInfo() {
 }
 
 function activitySuccess(data, textSatus, jqXHR) {
-    
+    var oneWeekinMs = 1000*60*60*24*7;
+    var weekUV=0;
+    var weekCals = 0;
+    var weekTime =0;
     $("#main").show();
 
     // Add the devices to the list before the list item for the add device button (link)
     for (var activity of data.activities) {
         var startTime= new Date(activity.startTime);
+        if(startTime>=(new Date()-oneWeekinMs)){
+         weekUV+=activity.totalUV;
+         weekCals+= activity.calories;
+         weekTime += activity.duration;
+        }
         //var endTime= new Date(activity.endTime);
         //$("#startTime").html(startTime.toLocaleString('en-us'));
         //$("#endTime").html(endTime.toLocaleString('en-us'));
@@ -74,6 +82,12 @@ function activitySuccess(data, textSatus, jqXHR) {
             + "</div>";
         $("#activity-cards").append(card);
     }
+    $("#weekUV").text(weekUV);
+    $("#weekCals").text(weekCals);
+    var hours = Math.floor(weekTime/(60*60*1000));
+    var mins = Math.floor((weekTime%(60*60*1000)/(60*1000)));
+    var secs = Math.floor((weekTime%(60*60*1000)%(60*1000))/1000);
+    $("#weekTime").text(hours+":"+mins.pad(2)+":"+secs.pad(2));
 }
 
 function activityError(jqXHR, textStatus, errorThrown) {
