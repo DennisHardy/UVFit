@@ -104,6 +104,7 @@ router.post('/add', function(req, res, next){
         success : false,
         message : "",
         activityId: "",
+        threshold: 0
     };
 
 
@@ -193,6 +194,16 @@ router.post('/add', function(req, res, next){
         activity.calories = getCalories(activity);
         activity.TotalUV = getTotalUV(activity);
         responseJson.message = "New activity recorded.";
+
+        User.findOne({"email": device.userEmail}, function(err, user){
+            if(err){
+                responseJson.status = "ERROR";
+                responseJson.message = "Error getting user";
+                return res.status(201).json(responseJson);
+            } else {
+                responseJson.threshold = user.threshold;
+            }
+        });
 
         activity.save(function(err, newAct){
             if (err) {
