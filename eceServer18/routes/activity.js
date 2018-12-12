@@ -252,6 +252,7 @@ router.put("/update", function(req, res, next){
                 activity.waypoints.push(newWaypoint);
                 activity.calories = getCalories(activity);
                 activity.TotalUV = getTotalUV(activity);
+                activity.activityType = getType(activity);
             }
             activity.save(function(err, activity){
                 if (err) {
@@ -337,5 +338,23 @@ function getTotalUV(activity){
    }
    totalUV=Math.ceil((total/100)/3600);
    return totalUV;
+}
+function getType(activity){
+   var sum=0;
+   var count=0;
+   for(var waypoint of activity.waypoints){
+      sum+=waypoint.speed;
+      count+=1;
+   }
+   speed = sum/count;
+   if(speed<4){
+      return "walking";
+   }
+   else if(speed<7){
+      return "running";
+   }
+   else{
+      return "biking";
+   }
 }
 module.exports = router;
