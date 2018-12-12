@@ -10,6 +10,7 @@ var jwt = require("jwt-simple");
 /* Authenticate user */
 var secret = fs.readFileSync(__dirname + '/../../jwtkey').toString();
 
+
 router.post('/signin', function(req, res, next) {
    User.findOne({email: req.body.email}, function(err, user) {
       if (err) {
@@ -241,6 +242,44 @@ router.put("/account/name", function(req, res){
    }
 });
 
+router.put("/account/threshold", function(req, res){
+   // Check for authentication token in x-auth header
+   if (!req.headers["x-auth"]) {
+      return res.status(401).json({success: false, message: "No authentication token"});
+   }
+   if(!req.body.threshold){
+      return res.status(400).json({success: false, message: "No threshold provided."});
+   }
+   var authToken = req.headers["x-auth"];
+   try {
+      var decodedToken = jwt.decode(authToken, secret);
+      var responseJson = {};
+      
+      User.findOne({email: decodedToken.email}, function(err, user) {
+         if(err || !user) {
+            return res.status(200).json({success: false, message: "User does not exist."});
+         }
+         else {
+            user.threshold = req.body.threshold;
+            user.save(function(err, user){
+               if (err) {
+                  responseJson.success = false;
+                  responseJson.message = "Error: Communicating with database";
+                  return res.status(201).json(responseJson);
+               }
+               else{
+                  responseJson.success = true;
+                  responseJson.message = "Threshold Updated Successfully";
+                  return res.status(201).send(JSON.stringify(responseJson));
+               }
+            });
+         }
+      });
+   }
+   catch (ex) {
+      return res.status(401).json({success: false, message: "Invalid authentication token."});
+   }
+});
 router.put("/account/password", function(req, res){
    // Check for authentication token in x-auth header
    if (!req.headers["x-auth"]) {

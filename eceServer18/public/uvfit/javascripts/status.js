@@ -109,6 +109,8 @@ function accountInfoSuccess(data, textSatus, jqXHR) {
     $("#fullName").html(data.fullName);
     $("#lastAccess").html((new Date(data.lastAccess)).toLocaleString('en-us'));
     $("#main").show();
+    $("#threshold").html(Number(data.threshold));
+    console.log(data.threshold);
 
     // Add the devices to the list before the list item for the add device button (link)
     for (var device of data.devices) {
@@ -144,6 +146,25 @@ function registerDevice() {
             $("#addDeviceForm").before("<li class='collection-item'>ID: " +
                 $("#deviceId").val() + ", APIKEY: " + data["apikey"] + "</li>")
             hideAddDeviceForm();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            var response = JSON.parse(jqXHR.responseText);
+            $("#error").html("Error: " + response.message);
+            $("#error").show();
+        }
+    }); 
+}
+
+function updateThreshold() {
+    $.ajax({
+        url: '/users/account/threshold',
+        type: 'PUT',
+        headers: { 'x-auth': window.localStorage.getItem("authToken") },   
+        data: { threshold: $("#threshold").val() }, 
+        responseType: 'json',
+        success: function (data, textStatus, jqXHR) {
+            // Add new device to the device list
+            console.log("Success");
         },
         error: function(jqXHR, textStatus, errorThrown) {
             var response = JSON.parse(jqXHR.responseText);
@@ -191,5 +212,6 @@ $(function() {
     // Register event listeners
     $("#addDevice").click(showAddDeviceForm);
     $("#registerDevice").click(registerDevice);   
-    $("#cancel").click(hideAddDeviceForm);   
+    $("#cancel").click(hideAddDeviceForm);
+    $("#setThreshold").click(updateThreshold);
 });
