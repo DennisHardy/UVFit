@@ -93,6 +93,7 @@ router.get("/account" , function(req, res) {
             userStatus['email'] = user.email;
             userStatus['fullName'] = user.fullName;
             userStatus['lastAccess'] = user.lastAccess;
+             userStatus['threshold'] = user.threshold;
             
             // Find devices based on decoded token
 		      Device.find({ userEmail : decodedToken.email}, function(err, devices) {

@@ -109,7 +109,7 @@ function accountInfoSuccess(data, textSatus, jqXHR) {
     $("#fullName").html(data.fullName);
     $("#lastAccess").html((new Date(data.lastAccess)).toLocaleString('en-us'));
     $("#main").show();
-    $("#threshold").html(Number(data.threshold));
+    $("#threshold").val(Number(data.threshold));
     console.log(data.threshold);
 
     // Add the devices to the list before the list item for the add device button (link)
