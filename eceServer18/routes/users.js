@@ -38,8 +38,8 @@ router.post('/signin', function(req, res, next) {
 /* Register a new user */
 router.post('/register', function(req, res, next) {
 
-   if(!req.body.password||!req.body.email||req.body.fullName){
-      res.status(400).json( {success: false, message: "Invalid Request"});
+   if(!req.body.password||!req.body.email||!req.body.fullName){
+      return res.status(400).json( {success: false, message: "Invalid Request"});
    } 
    if (!checkPasswordStrength(req.body.password)){
       responseDiv.style.display = "block";
@@ -62,10 +62,10 @@ router.post('/register', function(req, res, next) {
         newUser.save( function(err, user) {
            if (err) {
               // Error can occur if a duplicate email is sent
-              res.status(400).json( {success: false, message: err.errmsg});
+              return res.status(400).json( {success: false, message: err.errmsg});
            }
            else {
-               res.status(201).json( {success: true, message: user.fullName + " has been created."})
+               return res.status(201).json( {success: true, message: user.fullName + " has been created."})
            }
         });
     });    
