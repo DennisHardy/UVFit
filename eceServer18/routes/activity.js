@@ -36,7 +36,7 @@ router.get('/all', function(req, res, next) {
                                 duration: (activity.endTime - activity.startTime),
                                 activityType: activity.activityType,
                                 calories: activity.calories,
-                                totalUV: activity.totalUV
+                                totalUV: activity.TotalUV
                             });
                         }
                         response['activities'] = actList;
@@ -83,7 +83,7 @@ router.get('/id/:actId', function(req, res, next) {
                         response.endTime = activity.endTime;
                         response.activityType = activity.activityType;
                         response.calories = activity.calories;
-                        response.TotalUV = activity.totalUV;
+                        response.TotalUV = activity.TotalUV;
                         response.waypoints = activity.waypoints;
                         return res.status(200).json(response);
                     }
@@ -191,7 +191,7 @@ router.post('/add', function(req, res, next){
             waypoints:    req.body.waypoints,
         });
         activity.calories = getCalories(activity);
-        activity.totalUV = getTotalUV(activity);
+        activity.TotalUV = getTotalUV(activity);
         responseJson.message = "New activity recorded.";
 
         activity.save(function(err, newAct){
@@ -253,7 +253,7 @@ router.put("/update", function(req, res, next){
             if(newWaypoint){
                 activity.waypoints.push(newWaypoint);
                 activity.calories = getCalories(activity);
-                activity.totalUV = getTotalUV(activity);
+                activity.TotalUV = getTotalUV(activity);
             }
             activity.save(function(err, activity){
                 if (err) {
@@ -298,6 +298,7 @@ router.put("/type", function(req, res, next){
          if(req.body.activityType=="walking"|| req.body.activityType=="running"|| req.body.activityType=="biking"){
              activity.activityType=req.body.activityType;
              activity.calories = getCalories(activity);
+             activity.TotalUV = getTotalUV(activity);
          }
          else{
             responseJson.message = "Invalid Activity Type: "+req.body.activityType;
