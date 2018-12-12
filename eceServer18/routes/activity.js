@@ -202,19 +202,19 @@ router.post('/add', function(req, res, next){
                 return res.status(201).json(responseJson);
             } else {
                 responseJson.threshold = user.threshold;
-            }
-        });
 
-        activity.save(function(err, newAct){
-            if (err) {
-                responseJson.status = "ERROR";
-                responseJson.message = "Error saving data in db." + err;
-                return res.status(201).send(JSON.stringify(responseJson));
-            }
+                activity.save(function(err, newAct){
+                    if (err) {
+                        responseJson.status = "ERROR";
+                        responseJson.message = "Error saving data in db." + err;
+                        return res.status(201).send(JSON.stringify(responseJson));
+                    }
 
-            responseJson.success = true;
-            responseJson.activityId = newAct._id.toString();
-            return res.status(201).send(JSON.stringify(responseJson));
+                    responseJson.success = true;
+                    responseJson.activityId = newAct._id.toString();
+                    return res.status(201).send(JSON.stringify(responseJson));
+                });
+            }
         });
     });
 });
@@ -282,90 +282,90 @@ router.put("/update", function(req, res, next){
 });
 
 router.put("/type", function(req, res, next){
-   var responseJson = {
-      success : false,
-      message : "",
-      activityId: "",
-      newType: ""
-   };
-   if(!req.body.activityType || !req.body.activityId){
-      responseJson.status = "ERROR";
-      responseJson.message = "Invalid Request.";
-      return res.status(400).send(JSON.stringify(responseJson));
-   }
-   else{
-      Activity.findById(req.body.activityId, function(err, activity){
-         if(err){
-             console.log("Error finding activity to update!");
-             console.log(err);
-             responseJson.message = "Interal error.";
-             return res.status(501).json(responseJson);
-         }
-         if(!activity){
-             responseJson.message = "Activity ID " + req.body.activityId + " does not exist.";
-             return res.status(201).json(responseJson);
-         }
-         if(req.body.activityType=="walking"|| req.body.activityType=="running"|| req.body.activityType=="biking"){
-             activity.activityType=req.body.activityType;
-             activity.calories = getCalories(activity);
-             activity.TotalUV = getTotalUV(activity);
-         }
-         else{
-            responseJson.message = "Invalid Activity Type: "+req.body.activityType;
-             return res.status(400).json(responseJson);
-         }
-         activity.save(function(err, activity){
-             if (err) {
-                 responseJson.status = "ERROR";
-                 responseJson.message = "Error saving data in db." + err;
-                 return res.status(201).send(JSON.stringify(responseJson));
-             }
+    var responseJson = {
+        success : false,
+        message : "",
+        activityId: "",
+        newType: ""
+    };
+    if(!req.body.activityType || !req.body.activityId){
+        responseJson.status = "ERROR";
+        responseJson.message = "Invalid Request.";
+        return res.status(400).send(JSON.stringify(responseJson));
+    }
+    else{
+        Activity.findById(req.body.activityId, function(err, activity){
+            if(err){
+                console.log("Error finding activity to update!");
+                console.log(err);
+                responseJson.message = "Interal error.";
+                return res.status(501).json(responseJson);
+            }
+            if(!activity){
+                responseJson.message = "Activity ID " + req.body.activityId + " does not exist.";
+                return res.status(201).json(responseJson);
+            }
+            if(req.body.activityType=="walking"|| req.body.activityType=="running"|| req.body.activityType=="biking"){
+                activity.activityType=req.body.activityType;
+                activity.calories = getCalories(activity);
+                activity.TotalUV = getTotalUV(activity);
+            }
+            else{
+                responseJson.message = "Invalid Activity Type: "+req.body.activityType;
+                return res.status(400).json(responseJson);
+            }
+            activity.save(function(err, activity){
+                if (err) {
+                    responseJson.status = "ERROR";
+                    responseJson.message = "Error saving data in db." + err;
+                    return res.status(201).send(JSON.stringify(responseJson));
+                }
 
-             responseJson.success = true;
-             responseJson.message = "Activity successfully updated!";
-             responseJson.activityId = activity._id.toString();
-             responseJson.newType = req.body.activityType;
-             return res.status(201).send(JSON.stringify(responseJson));
-         });
-     });
-   }
+                responseJson.success = true;
+                responseJson.message = "Activity successfully updated!";
+                responseJson.activityId = activity._id.toString();
+                responseJson.newType = req.body.activityType;
+                return res.status(201).send(JSON.stringify(responseJson));
+            });
+        });
+    }
 });
 function getCalories(activity){
-   var lengthSeconds=(activity.endTime - activity.startTime)/1000;
-   var calories = 0;
-   if(activity.activityType == "walking"){
-         calories = 0.04 * lengthSeconds; //0.04 calories per second found online
-   } else if(activity.activityType == "running"){
-         calories = 0.12 * lengthSeconds; //Found online
-   } else if(activity.activityType == "biking"){
-         calories = 0.135 * lengthSeconds; //Found online
-   }
-   return Math.ceil(calories);
+    var lengthSeconds=(activity.endTime - activity.startTime)/1000;
+    var calories = 0;
+    if(activity.activityType == "walking"){
+        calories = 0.04 * lengthSeconds; //0.04 calories per second found online
+    } else if(activity.activityType == "running"){
+        calories = 0.12 * lengthSeconds; //Found online
+    } else if(activity.activityType == "biking"){
+        calories = 0.135 * lengthSeconds; //Found online
+    }
+    return Math.ceil(calories);
 }
 function getTotalUV(activity){
-   var total = 0;
-   for(var waypoint of activity.waypoints){
-      total +=waypoint.uvExposure;
-   }
-   totalUV=Math.ceil((total/100)/3600);
-   return totalUV;
+    var total = 0;
+    for(var waypoint of activity.waypoints){
+        total +=waypoint.uvExposure;
+    }
+    totalUV=Math.ceil((total/100)/3600);
+    return totalUV;
 }
 function getType(activity){
-   var sum=0;
-   var count=0;
-   for(var waypoint of activity.waypoints){
-      sum+=waypoint.speed;
-      count+=1;
-   }
-   speed = sum/count;
-   if(speed<4){
-      return "walking";
-   }
-   else if(speed<7){
-      return "running";
-   }
-   else{
-      return "biking";
-   }
+    var sum=0;
+    var count=0;
+    for(var waypoint of activity.waypoints){
+        sum+=waypoint.speed;
+        count+=1;
+    }
+    speed = sum/count;
+    if(speed<4){
+        return "walking";
+    }
+    else if(speed<7){
+        return "running";
+    }
+    else{
+        return "biking";
+    }
 }
 module.exports = router;
