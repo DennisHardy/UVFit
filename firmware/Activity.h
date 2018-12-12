@@ -46,7 +46,11 @@ class Activity{
         }
         
         Waypoint getNext(){
-            return waypoints[index++];
+            return waypoints[index];
+        }
+        
+        void next(){
+            index++;
         }
         
         void setIndex(unsigned newIndex){

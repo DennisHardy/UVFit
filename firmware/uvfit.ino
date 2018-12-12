@@ -23,6 +23,9 @@ Activity currActivity, txActivity;
 ActivityController ac;
 ActivityTransmitter trans;
 
+uint16_t totalUV = 0;
+uint16_t threshold;
+
 unsigned long prevTime = millis();
 unsigned long lastToggle = millis();
 
@@ -33,6 +36,8 @@ Timer updateTimer(1, updateGPS);
 Timer waypointTimer(1000, getWaypoint);
 Timer transmitTimer(500, transmitWaypoint, true);
 Timer acTimer(1000, &ActivityController::debounce, ac, true);
+Timer retryTimer(5000, addActivity);
+Timer retryUpdateTimer(5000, transmitWaypoint);
 
 SYSTEM_THREAD(ENABLED);
 
@@ -44,17 +49,35 @@ float convertDMStoDD(float DMS, char dir){
     float degrees = (int)(DMS / 100);
     float minutes = ((int)DMS) % 100;
     float seconds = (DMS - (int)DMS) * 100;
+    String dms = String::format("Degrees: %f\nMinutes %f\nSeconds: %f\nRaw: %f", degrees, minutes, seconds, DMS);
+    Serial.println(dms);
     return (dir == 'W' || dir == 'S' ? -1 : 1) * (degrees + minutes / 60.0 + seconds / 3600);
 }
 
 void getWaypoint(){
-    float lonDecimal = convertDMStoDD(loc.longitude, loc.lon);
+    Serial.println("Latitude");
     float latDecimal = convertDMStoDD(loc.latitude, loc.lat);
-    currActivity.addWaypoint(Waypoint(latDecimal, lonDecimal, loc.speed * 1.15078, uv.readUV()));
+    Serial.println("Longitude");
+    float lonDecimal = convertDMStoDD(loc.longitude, loc.lon);
+    uint16_t instUV = uv.readUV();
+    currActivity.addWaypoint(Waypoint(latDecimal, lonDecimal, loc.speed * 1.15078, instUV));
+    totalUV += instUV;
+    Serial.println(totalUV);
+    if(totalUV > threshold - 0.2 * threshold)
+        RGB.color(0xAA, 0xAA, 0x00);
+    if(totalUV > threshold)
+        RGB.color(0xFF, 0x00, 0x00);
     if(!loc.fix)
         return;
     String output = String::format("Latitude, Longitude\n%f, %f\n", latDecimal, lonDecimal);
     Serial.println(output);
+}
+
+void addActivity(){
+    trans.start();
+    String data = txActivity.json();
+    Serial.println(data);
+    Particle.publish("activity/add", data, PRIVATE);
 }
 
 void transmitWaypoint(){
@@ -63,6 +86,7 @@ void transmitWaypoint(){
         Serial.println("Sending...");
         Serial.println(postData);
         Particle.publish("activity/update", postData, PRIVATE);
+        retryUpdateTimer.start();
         //transmitTimer.stop();
     } else if(txActivity.hasNext()){
         Serial.println("Waiting for WiFi to continue transmitting activity");
@@ -73,27 +97,29 @@ void transmitWaypoint(){
     }
 }
 
-void toggleActivity(){
+void toggleActivity(system_event_t event, int param){
+    Serial.println(threshold);
     ac.step(&startTime, &endTime);
     if(!waypointTimer.isActive() && ac.started()){
+        totalUV = 0;
         Serial.println("Started");
+        RGB.control(true);
+        RGB.color(0x51, 0x2c, 0xa8);
         currActivity = Activity{};
         currActivity.setStartTime(startTime);
         waypointTimer.start();
     } else if(waypointTimer.isActive() && ac.stopped()) {
+        totalUV = 0;
         Serial.println("Stopped");
+        RGB.control(false);
         waypointTimer.stop();
         currActivity.setEndTime(endTime);
         activities.push_back(currActivity);
     }
 }
 
-//ec2-18-225-11-150
-//tCcr8KJV34GtKWUnaYSh8Wp81oeCMwCa
-//ec2-18-188-154-175
-//qO3URcGG7LBZ7tcxT72HwKyMsNVKuoJI
-
 void addHandler(const char *event, const char *data){
+    retryTimer.stop();
     // Formatting output
     String output = String::format("POST Response:\n  %s\n  %s\n", event, data);
     // Log to serial console
@@ -104,6 +130,7 @@ void addHandler(const char *event, const char *data){
     //      using the update endpoint and the activity ID
     output = String::format("%s", data);
     String success;
+    
     int index = output.indexOf("success");
     if(index != -1){
         success = output.substring(index + 9, output.indexOf('e', index + 9) + 1);
@@ -129,10 +156,27 @@ void addHandler(const char *event, const char *data){
         Serial.println("Could not find 'activityId'!");
         Serial.println(output);
     }
+    
+    index = output.indexOf("threshold");
+    if(index != -1){
+        String strThreshold = output.substring(index + 11, output.indexOf('}', index + 11));
+        Serial.print("Threshold: ");
+        Serial.println(strThreshold);
+        int newThresh = strThreshold.toInt();
+        if(newThresh != 0 && newThresh != threshold){
+            threshold = newThresh;
+            EEPROM.put(0, threshold);
+        }
+    } else {
+        Serial.println("Could not find 'threshold'!");
+        Serial.println(output);
+    }
 }
 
 void updateHandler(const char *event, const char *data){
     // Formatting output
+    retryUpdateTimer.stop();
+    txActivity.next();
     String output = String::format("PUT Response:\n  %s\n  %s\n", event, data);
     // Log to serial console
     Serial.println(output);
@@ -142,6 +186,7 @@ void updateHandler(const char *event, const char *data){
 String output, postData;
 
 void setup() {
+    EEPROM.get(0, threshold);
     Serial.begin(9600);
     loc.begin(9600);
     loc.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -149,8 +194,9 @@ void setup() {
     uv.begin(VEML6070_1_T);
     updateTimer.start();
     ac.setTimer(&acTimer);
-    pinMode(D2, INPUT_PULLUP);
-    attachInterrupt(D2, toggleActivity, FALLING);
+    //pinMode(D2, INPUT_PULLUP);
+    System.on(button_click, toggleActivity);
+    //attachInterrupt(D2, toggleActivity, FALLING);
     Particle.syncTime();
     Time.zone(-7.0);
     Particle.subscribe("hook-response/activity/add", addHandler, MY_DEVICES);
@@ -162,25 +208,14 @@ void loop() {
         loc.parse(loc.lastNMEA());
     }
     
-    /*if(millis() - prevTime >= 1000){
-        //Record data as long as activity is started, gps has fix, and number of waypoints is less than max
-        if(ac.started() && loc.fix){
-           currActivity.addWaypoint(Waypoint(loc.latitude, loc.longitude, loc.speed, uv.readUV()));
-        }
-        prevTime = millis();
-    }*/
     
     if(!trans.tx() && activities.size() > 0 && Particle.connected()){
         //Send the data to the server when wifi is available and data is waiting to be sent
-        //TODO: replace with state machine
-        
+
         txActivity = activities.back();
         activities.pop_back();
-        trans.start();
-        
-        postData = txActivity.json();
-        Serial.println(postData);
-        Particle.publish("activity/add", postData, PRIVATE);
+        addActivity();
+        retryTimer.start();
     }
     
     if(millis() - lastSync >= ONE_DAY_MILLIS){
